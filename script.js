@@ -1,3 +1,7 @@
+const buttonContainer = document.querySelector(".button-container");
+const scoreText = document.querySelector("#score");
+const resultText = document.querySelector("#result");
+
 let humanScore = 0;
 let computerScore = 0;
 
@@ -8,17 +12,17 @@ function getComputerChoice() {
   return choices[rand];
 }
 
-function getHumanChoice() {
-  return prompt("Insert your choice (rock, paper, scissors)").toLowerCase();
-}
-
 function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-function playRound() {
+function updateDisplayText(str) {
+  resultText.textContent = str;
+}
+
+function playRound(humanChoice) {
+  humanChoice = humanChoice.toLowerCase();
   let computerChoice = getComputerChoice();
-  let humanChoice = getHumanChoice();
 
   if (
     (computerChoice === "rock" && humanChoice === "paper") ||
@@ -26,7 +30,7 @@ function playRound() {
     (computerChoice === "scissors" && humanChoice === "rock")
   ) {
     humanScore++;
-    console.log(
+    updateDisplayText(
       `Human wins, because ${capitalize(humanChoice)} beats ${capitalize(computerChoice)}`,
     );
   } else if (
@@ -35,28 +39,28 @@ function playRound() {
     (computerChoice === "scissors" && humanChoice === "paper")
   ) {
     computerScore++;
-    console.log(
+    updateDisplayText(
       `Computer wins, because ${capitalize(computerChoice)} beats ${capitalize(humanChoice)}`,
     );
   } else {
-    console.log(
+    updateDisplayText(
       `Round ends with a draw, because both players picked ${capitalize(humanChoice)}`,
     );
   }
 }
 
-function playGame() {
-  for (let i = 0; i < 5; i++) {
-    playRound();
+buttonContainer.addEventListener("click", (e) => {
+  if (e.target.tagName !== "BUTTON") return;
+
+  if (humanScore === 5 || computerScore === 5) {
+    humanScore = 0;
+    computerScore = 0;
   }
 
-  let winner =
-    humanScore > computerScore
-      ? "the Human (yes, you!)"
-      : humanScore === computerScore
-        ? "nobody (the game ended with a draw)"
-        : "the Computer";
-  console.log(`The winner is ${winner}`);
-}
+  playRound(e.target.id);
 
-playGame();
+  if (humanScore === 5) updateDisplayText("You have won.");
+  else if (computerScore === 5) updateDisplayText("The Computer has won.");
+
+  scoreText.textContent = humanScore + ":" + computerScore;
+});
